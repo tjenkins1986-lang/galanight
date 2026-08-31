@@ -11,10 +11,11 @@ Static HTML/JS app backed by Firebase Auth (sign-in) and Firestore
 ### 1. Create a Firebase project
 
 1. Go to the [Firebase console](https://console.firebase.google.com/) and create a new project.
-2. In **Build → Authentication → Sign-in method**, enable the **Email/Password** provider.
-3. In **Build → Authentication → Users**, manually add two users (you and your wife) with email + password. There's no public sign-up page in this app on purpose — accounts are created by hand in the console.
-4. In **Build → Firestore Database**, create a database (production mode is fine).
-5. In **Project settings → General → Your apps**, add a **Web app** and copy the `firebaseConfig` object it gives you.
+2. In **Build → Authentication → Sign-in method**, enable the **Google** provider.
+3. In **Build → Firestore Database**, create a database (production mode is fine).
+4. In **Project settings → General → Your apps**, add a **Web app** and copy the `firebaseConfig` object it gives you.
+
+There's no separate account-creation step — the first time each of you signs in with your Google account, Firebase creates the user automatically. Access itself is controlled by [`firestore.rules`](firestore.rules), which only allows the two email addresses listed there to read or write anything, so update that file if either address ever changes.
 
 ### 2. Add your config
 
@@ -58,11 +59,11 @@ Then open `http://localhost:8000/login.html`.
 
 1. Push this repo to GitHub (already done if you're reading this from the repo).
 2. In the repo's **Settings → Pages**, set the source to the `main` branch, root folder.
-3. Once published, in the Firebase console under **Authentication → Settings → Authorized domains**, add your `*.github.io` domain so sign-in works from the deployed site.
+3. Once published, in the Firebase console under **Authentication → Settings → Authorized domains**, add your `*.github.io` domain — Google Sign-In's popup will fail on any domain that isn't listed there.
 
 ## How it works
 
-- `login.html` — sign in with the email/password accounts you created in step 1.
+- `login.html` — sign in with Google. Only `thomas.jenkins1986@gmail.com` and `hannah.isabella@googlemail.com` can actually read or write data (enforced by `firestore.rules`), so anyone else's Google account gets a permission error from Firestore even if the popup succeeds.
 - `index.html` — lists all trips, most recent first. Links to each trip's detail page.
 - `add.html` — form to log a new trip: name, location, start/end dates, and the six highlight questions.
 - `entry.html` — read-only view of one trip's memory.
