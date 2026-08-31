@@ -2,10 +2,10 @@
 // Firebase console -> Project settings -> General -> Your apps -> SDK setup and configuration.
 // See README.md for the full setup steps (enable Email/Password auth + Firestore).
 export const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyCbN1ZjHca3xtTQKOqSX4bXFQc8Gqzu6PY",
+  authDomain: "galanight-14537.firebaseapp.com",
+  projectId: "galanight-14537",
+  storageBucket: "galanight-14537.firebasestorage.app",
+  messagingSenderId: "874066428633",
+  appId: "1:874066428633:web:a92a40e8ac33ce2e8af4c8",
 };
