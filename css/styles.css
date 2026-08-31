@@ -1,13 +1,20 @@
 :root {
-  color-scheme: light dark;
-  --ink: #2b2420;
-  --paper: #fdf8f0;
-  --paper-raised: #ffffff;
-  --accent: #c2622d;
-  --accent-dark: #9c4c21;
-  --muted: #7a6f63;
-  --border: #e7ddcf;
-  --shadow: 0 1px 3px rgba(43, 36, 32, 0.08), 0 1px 2px rgba(43, 36, 32, 0.06);
+  color-scheme: dark;
+  --ink: #152029;
+  --ink-2: #1e2c38;
+  --ink-3: #263847;
+  --ink-4: #304459;
+  --parchment: #f1e8d6;
+  --brass: #c9a227;
+  --brass-dim: #9a7d22;
+  --brass-bright: #e4c158;
+  --sage: #7c9473;
+  --clay: #a6462d;
+  --line: rgba(241, 232, 214, 0.14);
+  --line-strong: rgba(241, 232, 214, 0.28);
+  --text-hi: #f6f1e4;
+  --text-mid: rgba(246, 241, 228, 0.68);
+  --text-low: rgba(246, 241, 228, 0.42);
 }
 
 * {
@@ -16,10 +23,16 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  background: var(--paper);
-  color: var(--ink);
+  font-family: "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+  background: var(--ink);
+  color: var(--text-hi);
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--brass);
+  color: var(--ink);
 }
 
 .wrap {
@@ -36,30 +49,33 @@ header.top {
 }
 
 header.top h1 {
-  font-size: 1.5rem;
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 500;
+  font-size: 1.6rem;
   margin: 0;
   letter-spacing: -0.02em;
 }
 
 header.top h1 a {
-  color: var(--ink);
+  color: var(--text-hi);
   text-decoration: none;
 }
 
 .tagline {
-  color: var(--muted);
-  font-size: 0.9rem;
+  color: var(--text-mid);
+  font-size: 0.92rem;
   margin: 0 0 24px;
 }
 
 button, .btn {
   font: inherit;
+  font-weight: 500;
   cursor: pointer;
   border: none;
-  border-radius: 10px;
+  border-radius: 6px;
   padding: 10px 18px;
-  background: var(--accent);
-  color: #fff;
+  background: var(--brass);
+  color: var(--ink);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -68,17 +84,22 @@ button, .btn {
 }
 
 button:hover, .btn:hover {
-  background: var(--accent-dark);
+  background: var(--brass-dim);
+}
+
+button:focus-visible, .btn:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--brass-bright);
+  outline-offset: 2px;
 }
 
 button.secondary, .btn.secondary {
   background: transparent;
-  color: var(--ink);
-  border: 1px solid var(--border);
+  color: var(--text-hi);
+  border: 1px solid var(--line-strong);
 }
 
 button.secondary:hover, .btn.secondary:hover {
-  background: var(--border);
+  background: var(--ink-3);
 }
 
 .actions-row {
@@ -89,10 +110,9 @@ button.secondary:hover, .btn.secondary:hover {
 }
 
 .card {
-  background: var(--paper-raised);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  box-shadow: var(--shadow);
+  background: var(--ink-2);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
   padding: 22px;
   margin-bottom: 16px;
 }
@@ -101,29 +121,36 @@ button.secondary:hover, .btn.secondary:hover {
   display: block;
   text-decoration: none;
   color: inherit;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 
 .trip-card:hover {
-  border-color: var(--accent);
+  border-color: var(--brass);
+  background: var(--ink-3);
 }
 
 .trip-card h2 {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 500;
   margin: 0 0 4px;
-  font-size: 1.15rem;
+  font-size: 1.2rem;
 }
 
 .trip-meta {
-  color: var(--muted);
+  color: var(--text-mid);
   font-size: 0.88rem;
   display: flex;
   gap: 14px;
   flex-wrap: wrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .empty-state {
   text-align: center;
-  color: var(--muted);
+  color: var(--text-mid);
   padding: 60px 20px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 8px;
 }
 
 form {
@@ -139,12 +166,13 @@ form {
 }
 
 .field label {
-  font-weight: 600;
+  font-weight: 500;
   font-size: 0.92rem;
+  color: var(--text-hi);
 }
 
 .field .hint {
-  color: var(--muted);
+  color: var(--text-low);
   font-size: 0.8rem;
   font-weight: 400;
 }
@@ -165,15 +193,20 @@ input[type="password"],
 textarea {
   font: inherit;
   padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--paper-raised);
-  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--ink);
+  color: var(--text-hi);
   resize: vertical;
+  color-scheme: dark;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-low);
 }
 
 input:focus, textarea:focus {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--brass-bright);
   outline-offset: 1px;
 }
 
@@ -191,13 +224,16 @@ fieldset {
 }
 
 fieldset legend {
-  font-weight: 700;
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 500;
+  font-size: 1.1rem;
+  color: var(--text-hi);
   padding: 0;
   margin-bottom: 4px;
 }
 
 .error {
-  color: #b3261e;
+  color: var(--clay);
   font-size: 0.88rem;
   min-height: 1.2em;
 }
@@ -208,16 +244,19 @@ fieldset legend {
 
 .entry-section h3 {
   margin: 0 0 6px;
-  font-size: 0.85rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--accent-dark);
+  letter-spacing: 0.1em;
+  color: var(--brass);
 }
 
 .entry-section p {
   margin: 0;
   white-space: pre-wrap;
-  line-height: 1.5;
+  line-height: 1.6;
+  color: var(--text-mid);
 }
 
 .login-wrap {
@@ -227,21 +266,12 @@ fieldset legend {
 }
 
 .login-wrap h1 {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 500;
   text-align: center;
   margin-bottom: 4px;
 }
 
 .login-wrap .tagline {
   text-align: center;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ink: #f2ece2;
-    --paper: #1c1712;
-    --paper-raised: #262019;
-    --border: #3a3128;
-    --muted: #a89c8c;
-    --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-  }
 }
