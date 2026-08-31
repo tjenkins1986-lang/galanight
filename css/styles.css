@@ -109,6 +109,20 @@ button.secondary:hover, .btn.secondary:hover {
   flex-wrap: wrap;
 }
 
+.icon-btn {
+  padding: 9px 14px;
+}
+
+.icon-btn.danger {
+  border-color: var(--clay);
+  color: var(--clay);
+}
+
+.icon-btn.danger:hover {
+  background: var(--clay);
+  color: var(--text-hi);
+}
+
 .card {
   background: var(--ink-2);
   border: 1px solid var(--line-strong);

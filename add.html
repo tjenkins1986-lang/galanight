@@ -81,7 +81,7 @@
   </div>
 
   <script type="module">
-    import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+    import { collection, addDoc, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
     import { db } from "./js/firebase.js";
     import { requireAuth, wireLogout } from "./js/require-auth.js";
 
@@ -91,6 +91,29 @@
     const form = document.getElementById("add-form");
     const errorEl = document.getElementById("error");
     const submitBtn = document.getElementById("submit-btn");
+
+    const editId = new URLSearchParams(window.location.search).get("id");
+    const fieldIds = ["tripName", "location", "startDate", "endDate", "ate", "drank", "saw", "did", "wishedDone", "highlight"];
+
+    if (editId) {
+      document.title = "Edit trip — Gala Night";
+      submitBtn.textContent = "Save changes";
+      try {
+        const snap = await getDoc(doc(db, "memories", editId));
+        if (!snap.exists()) {
+          errorEl.textContent = "That trip couldn't be found.";
+          form.querySelectorAll("input, textarea, button[type=submit]").forEach((el) => (el.disabled = true));
+        } else {
+          const t = snap.data();
+          for (const key of fieldIds) {
+            document.getElementById(key).value = t[key] || "";
+          }
+        }
+      } catch (err) {
+        errorEl.textContent = "Couldn't load this trip.";
+        form.querySelectorAll("input, textarea, button[type=submit]").forEach((el) => (el.disabled = true));
+      }
+    }
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -117,17 +140,22 @@
         did: document.getElementById("did").value.trim(),
         wishedDone: document.getElementById("wishedDone").value.trim(),
         highlight: document.getElementById("highlight").value.trim(),
-        createdAt: serverTimestamp(),
-        createdBy: user.uid,
       };
 
       try {
-        const docRef = await addDoc(collection(db, "memories"), data);
-        window.location.href = `entry.html?id=${docRef.id}`;
+        if (editId) {
+          await updateDoc(doc(db, "memories", editId), data);
+          window.location.href = `entry.html?id=${editId}`;
+        } else {
+          data.createdAt = serverTimestamp();
+          data.createdBy = user.uid;
+          const docRef = await addDoc(collection(db, "memories"), data);
+          window.location.href = `entry.html?id=${docRef.id}`;
+        }
       } catch (err) {
         errorEl.textContent = "Couldn't save this memory. Please try again.";
         submitBtn.disabled = false;
-        submitBtn.textContent = "Save memory";
+        submitBtn.textContent = editId ? "Save changes" : "Save memory";
       }
     });
   </script>
