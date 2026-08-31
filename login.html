@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gala Night — Sign in</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="login-wrap">
+    <h1>Gala Night</h1>
+    <p class="tagline">Our travel memory book</p>
+
+    <form id="login-form" class="card">
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="text" id="email" name="email" autocomplete="username" required />
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required />
+      </div>
+      <div class="error" id="error"></div>
+      <button type="submit" id="submit-btn">Sign in</button>
+    </form>
+  </div>
+
+  <script type="module">
+    import { signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+    import { auth } from "./js/firebase.js";
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) window.location.href = "index.html";
+    });
+
+    const form = document.getElementById("login-form");
+    const errorEl = document.getElementById("error");
+    const submitBtn = document.getElementById("submit-btn");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorEl.textContent = "";
+      submitBtn.disabled = true;
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        window.location.href = "index.html";
+      } catch (err) {
+        errorEl.textContent = "Couldn't sign in — check your email and password.";
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

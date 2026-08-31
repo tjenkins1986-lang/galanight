@@ -1,0 +1,10 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Only the two of you (signed in via Firebase Auth) can read or write memories.
+    match /memories/{memoryId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

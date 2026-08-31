@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gala Night</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <h1><a href="index.html">Gala Night</a></h1>
+      <button class="secondary" id="logout-btn">Sign out</button>
+    </header>
+
+    <div class="actions-row">
+      <a class="btn secondary" href="index.html">&larr; Back to trips</a>
+    </div>
+
+    <div id="content">
+      <p class="empty-state">Loading…</p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+    import { db } from "./js/firebase.js";
+    import { requireAuth, wireLogout } from "./js/require-auth.js";
+
+    await requireAuth();
+    wireLogout();
+
+    const contentEl = document.getElementById("content");
+    const id = new URLSearchParams(window.location.search).get("id");
+
+    const sections = [
+      ["ate", "Best thing you ate"],
+      ["drank", "Best thing you drank"],
+      ["saw", "Best thing you saw"],
+      ["did", "Best thing you did"],
+      ["wishedDone", "Thing you wished you had done"],
+      ["highlight", "Highlight"],
+    ];
+
+    function escapeHtml(str) {
+      const div = document.createElement("div");
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function formatDateRange(start, end) {
+      const opts = { year: "numeric", month: "long", day: "numeric" };
+      const s = start ? new Date(start + "T00:00:00").toLocaleDateString(undefined, opts) : "";
+      const e = end ? new Date(end + "T00:00:00").toLocaleDateString(undefined, opts) : "";
+      if (s && e && s !== e) return `${s} – ${e}`;
+      return s || e || "";
+    }
+
+    if (!id) {
+      contentEl.innerHTML = `<p class="empty-state">No trip specified.</p>`;
+    } else {
+      try {
+        const snap = await getDoc(doc(db, "memories", id));
+        if (!snap.exists()) {
+          contentEl.innerHTML = `<p class="empty-state">That trip couldn't be found.</p>`;
+        } else {
+          const t = snap.data();
+          let html = `
+            <div class="card">
+              <h2 style="margin-top:0">${escapeHtml(t.tripName || "Untitled trip")}</h2>
+              <div class="trip-meta" style="margin-bottom: 8px;">
+                ${t.location ? `<span>📍 ${escapeHtml(t.location)}</span>` : ""}
+                <span>🗓️ ${formatDateRange(t.startDate, t.endDate)}</span>
+              </div>
+            </div>
+            <div class="card">
+          `;
+          for (const [key, label] of sections) {
+            const value = t[key];
+            if (!value) continue;
+            html += `
+              <div class="entry-section">
+                <h3>${label}</h3>
+                <p>${escapeHtml(value)}</p>
+              </div>
+            `;
+          }
+          html += `</div>`;
+          contentEl.innerHTML = html;
+        }
+      } catch (err) {
+        contentEl.innerHTML = `<p class="empty-state">Couldn't load this trip.</p>`;
+      }
+    }
+  </script>
+</body>
+</html>

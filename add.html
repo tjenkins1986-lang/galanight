@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add a memory — Gala Night</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <h1><a href="index.html">Gala Night</a></h1>
+      <button class="secondary" id="logout-btn">Sign out</button>
+    </header>
+
+    <div class="actions-row">
+      <a class="btn secondary" href="index.html">&larr; Back to trips</a>
+    </div>
+
+    <form id="add-form" class="card">
+      <fieldset>
+        <legend>Trip details</legend>
+
+        <div class="field">
+          <label for="tripName">Trip name</label>
+          <input type="text" id="tripName" required placeholder="e.g. Kyoto in the rain" />
+        </div>
+
+        <div class="field">
+          <label for="location">Location</label>
+          <input type="text" id="location" required placeholder="e.g. Kyoto, Japan" />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="startDate">Start date</label>
+            <input type="date" id="startDate" required />
+          </div>
+          <div class="field">
+            <label for="endDate">End date</label>
+            <input type="date" id="endDate" required />
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Highlights</legend>
+
+        <div class="field">
+          <label for="ate">Best thing you ate</label>
+          <textarea id="ate"></textarea>
+        </div>
+        <div class="field">
+          <label for="drank">Best thing you drank</label>
+          <textarea id="drank"></textarea>
+        </div>
+        <div class="field">
+          <label for="saw">Best thing you saw</label>
+          <textarea id="saw"></textarea>
+        </div>
+        <div class="field">
+          <label for="did">Best thing you did</label>
+          <textarea id="did"></textarea>
+        </div>
+        <div class="field">
+          <label for="wishedDone">Thing you wished you had done</label>
+          <textarea id="wishedDone"></textarea>
+        </div>
+        <div class="field">
+          <label for="highlight">Highlight</label>
+          <textarea id="highlight"></textarea>
+        </div>
+      </fieldset>
+
+      <div class="error" id="error"></div>
+      <button type="submit" id="submit-btn">Save memory</button>
+    </form>
+  </div>
+
+  <script type="module">
+    import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+    import { db } from "./js/firebase.js";
+    import { requireAuth, wireLogout } from "./js/require-auth.js";
+
+    const user = await requireAuth();
+    wireLogout();
+
+    const form = document.getElementById("add-form");
+    const errorEl = document.getElementById("error");
+    const submitBtn = document.getElementById("submit-btn");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorEl.textContent = "";
+
+      const startDate = document.getElementById("startDate").value;
+      const endDate = document.getElementById("endDate").value;
+      if (endDate < startDate) {
+        errorEl.textContent = "End date can't be before the start date.";
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Saving…";
+
+      const data = {
+        tripName: document.getElementById("tripName").value.trim(),
+        location: document.getElementById("location").value.trim(),
+        startDate,
+        endDate,
+        ate: document.getElementById("ate").value.trim(),
+        drank: document.getElementById("drank").value.trim(),
+        saw: document.getElementById("saw").value.trim(),
+        did: document.getElementById("did").value.trim(),
+        wishedDone: document.getElementById("wishedDone").value.trim(),
+        highlight: document.getElementById("highlight").value.trim(),
+        createdAt: serverTimestamp(),
+        createdBy: user.uid,
+      };
+
+      try {
+        const docRef = await addDoc(collection(db, "memories"), data);
+        window.location.href = `entry.html?id=${docRef.id}`;
+      } catch (err) {
+        errorEl.textContent = "Couldn't save this memory. Please try again.";
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Save memory";
+      }
+    });
+  </script>
+</body>
+</html>

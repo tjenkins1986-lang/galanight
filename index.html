@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gala Night</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <h1><a href="index.html">Gala Night</a></h1>
+      <button class="secondary" id="logout-btn">Sign out</button>
+    </header>
+    <p class="tagline">Our travel memory book</p>
+
+    <div class="actions-row">
+      <a class="btn" href="add.html">+ Add a memory</a>
+    </div>
+
+    <div id="trip-list">
+      <p class="empty-state">Loading trips…</p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+    import { db } from "./js/firebase.js";
+    import { requireAuth, wireLogout } from "./js/require-auth.js";
+
+    await requireAuth();
+    wireLogout();
+
+    const listEl = document.getElementById("trip-list");
+
+    function formatDateRange(start, end) {
+      const opts = { year: "numeric", month: "short", day: "numeric" };
+      const s = start ? new Date(start + "T00:00:00").toLocaleDateString(undefined, opts) : "";
+      const e = end ? new Date(end + "T00:00:00").toLocaleDateString(undefined, opts) : "";
+      if (s && e && s !== e) return `${s} – ${e}`;
+      return s || e || "";
+    }
+
+    try {
+      const q = query(collection(db, "memories"), orderBy("startDate", "desc"));
+      const snap = await getDocs(q);
+
+      if (snap.empty) {
+        listEl.innerHTML = `<p class="empty-state">No trips yet — add your first memory!</p>`;
+      } else {
+        listEl.innerHTML = "";
+        snap.forEach((docSnap) => {
+          const t = docSnap.data();
+          const a = document.createElement("a");
+          a.className = "card trip-card";
+          a.href = `entry.html?id=${docSnap.id}`;
+          a.innerHTML = `
+            <h2>${escapeHtml(t.tripName || "Untitled trip")}</h2>
+            <div class="trip-meta">
+              ${t.location ? `<span>📍 ${escapeHtml(t.location)}</span>` : ""}
+              <span>🗓️ ${formatDateRange(t.startDate, t.endDate)}</span>
+            </div>
+          `;
+          listEl.appendChild(a);
+        });
+      }
+    } catch (err) {
+      listEl.innerHTML = `<p class="empty-state">Couldn't load trips. ${escapeHtml(err.message || "")}</p>`;
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement("div");
+      div.textContent = str;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>
